@@ -19,6 +19,7 @@ export default class News extends Component {
     let parsedData = await data.json();
     this.setState({
       articles: parsedData.articles,
+      totalResults:parsedData.totalResults,
       loading:false
     });
   }
@@ -70,7 +71,7 @@ renderNextNews = async () => {
           <button
             type="button"
             className="btn btn-primary"
-            // disabled={this.state.page>Math.ceil(this.state.articles.totalResults/this.props.pageSize)}
+            disabled={this.state.page===Math.ceil(this.state.totalResults/this.props.pageSize)}
             onClick={this.renderNextNews}
           >
             Next &rarr;
