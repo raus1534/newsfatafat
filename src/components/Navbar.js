@@ -2,7 +2,11 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
 export default class Navbar extends Component {
-
+  // countryUpdated(event){
+  //   let country = event.target.value;
+  //   this.props.countr(country)
+  //   console.log(country)
+  // }
   render() {
     return (
       <>
@@ -33,36 +37,77 @@ export default class Navbar extends Component {
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link active" aria-current="page" to="/business">
+                  <Link
+                    className="nav-link active"
+                    aria-current="page"
+                    to="/business"
+                  >
                     Business
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link active" aria-current="page" to="/entertainment">
+                  <Link
+                    className="nav-link active"
+                    aria-current="page"
+                    to="/entertainment"
+                  >
                     Entertainment
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link active" aria-current="page" to="/health">
+                  <Link
+                    className="nav-link active"
+                    aria-current="page"
+                    to="/health"
+                  >
                     Health
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link active" aria-current="page" to="/science">
+                  <Link
+                    className="nav-link active"
+                    aria-current="page"
+                    to="/science"
+                  >
                     Science
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link active" aria-current="page" to="/sport">
+                  <Link
+                    className="nav-link active"
+                    aria-current="page"
+                    to="/sport"
+                  >
                     Sports
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link active" aria-current="page" to="/tech">
+                  <Link
+                    className="nav-link active"
+                    aria-current="page"
+                    to="/tech"
+                  >
                     Technology
                   </Link>
                 </li>
               </ul>
+            </div>
+            <div className="form-floating">
+              <select
+                className="form-select"
+                id="floatingSelect"
+                aria-label="Floating label select example"
+                onChange={this.countryUpdated}
+              >
+                <option value="us" defaultValue>USA</option>
+                <option value="in">India</option>
+                <option value="au">Australia</option>
+                <option value="cn">China</option>
+                <option value="ae">UAE</option>
+                <option value="gb">UK</option>
+                <option value="de">Germany</option>
+              </select>
+              <label htmlFor="floatingSelect">Country</label>
             </div>
           </div>
         </nav>
