@@ -4,6 +4,7 @@ import NewsItems from "./NewsItems";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 export default class News extends Component {
+  apiKey = process.env.REACT_APP_NEWS_API;
   static defaultProps = {
     pageSize: 9,
     category: 'general'
@@ -24,14 +25,18 @@ toUppercaseTitle=(title)=>{
   }
 
   async updateRendering() {
-    let newsAPI = `https://newsapi.org/v2/top-headlines?country=in&category=${this.props.category}&apiKey=121808bfb87c4fd7b5a8e45b3b04184f&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+    let newsAPI = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+    this.props.onProgressState(10);
     let data = await fetch(newsAPI);
+    this.props.onProgressState(30);
     let parsedData = await data.json();
+    this.props.onProgressState(80);
     this.setState({
       articles: parsedData.articles,
       totalResults: parsedData.totalResults,
       loading: false,
     });
+    this.props.onProgressState(100);
   }
 
   async componentDidMount() {
@@ -52,7 +57,7 @@ toUppercaseTitle=(title)=>{
 
   fetchMoreData = async () => {
     this.setState({ page: ++this.state.page });
-    let newsAPI = `https://newsapi.org/v2/top-headlines?country=in&category=${this.props.category}&apiKey=121808bfb87c4fd7b5a8e45b3b04184f&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+    let newsAPI = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
     let data = await fetch(newsAPI);
     let parsedData = await data.json();
     this.setState({

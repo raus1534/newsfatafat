@@ -2,11 +2,9 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
 export default class Navbar extends Component {
-  // countryUpdated(event){
-  //   let country = event.target.value;
-  //   this.props.countr(country)
-  //   console.log(country)
-  // }
+  countryUpdated=(event)=>{
+    this.props.countryChange(event.target.value)
+  }
   render() {
     return (
       <>
@@ -99,8 +97,8 @@ export default class Navbar extends Component {
                 aria-label="Floating label select example"
                 onChange={this.countryUpdated}
               >
-                <option value="us" defaultValue>USA</option>
-                <option value="in">India</option>
+                <option value="in" defaultValue>India</option>
+                <option value="us">USA</option>
                 <option value="au">Australia</option>
                 <option value="cn">China</option>
                 <option value="ae">UAE</option>

@@ -16,8 +16,8 @@ export default class NewsItems extends Component {
             alt="..."
           />
           <div className="card-body">
-            <h5 className="card-title">{title}</h5>
-            <p className="card-text">{description}</p>
+            <h5 className="card-title">{title?title:"Breaking News"}</h5>
+            <p className="card-text">{description?description:"Click READ HERE for reading a news"}</p>
             <a
               href={url}
               target="_blank"
