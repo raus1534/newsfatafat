@@ -5,14 +5,15 @@ import InfiniteScroll from "react-infinite-scroll-component";
 
 export default class News extends Component {
   apiKey = process.env.REACT_APP_NEWS_API;
+  
   static defaultProps = {
     pageSize: 9,
     category: 'general'
   }
 
-toUppercaseTitle=(title)=>{
-  return title.toUpperCase();
-}
+  toUppercaseTitle = (title) => {
+    return title.toUpperCase();
+  }
 
   constructor(props) {
     super(props);
@@ -42,18 +43,6 @@ toUppercaseTitle=(title)=>{
   async componentDidMount() {
     this.updateRendering();
   }
-  // renderPreviousNews = async () => {
-  //   this.setState({
-  //     page: --this.state.page,
-  //   });
-  //   this.updateRendering();
-  // };
-  // renderNextNews = async () => {
-  //   this.setState({
-  //     page: ++this.state.page,
-  //   });
-  //   this.updateRendering();
-  // };
 
   fetchMoreData = async () => {
     this.setState({ page: ++this.state.page });
@@ -65,7 +54,7 @@ toUppercaseTitle=(title)=>{
       totalResults: parsedData.totalResults,
     });
   };
-  
+
   render() {
     return (
       <>
@@ -101,27 +90,6 @@ toUppercaseTitle=(title)=>{
             <h1 className="text-center">THE END</h1>
           )}
         </div>
-        {/* <div className="container my-2 d-flex justify-content-between">
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={this.renderPreviousNews}
-            disabled={this.state.page <= 1}
-          >
-            &larr; Previous
-          </button>
-          <button
-            type="button"
-            className="btn btn-primary"
-            disabled={
-              this.state.page ===
-              Math.ceil(this.state.totalResults / this.props.pageSize)
-            }
-            onClick={this.renderNextNews}
-          >
-            Next &rarr;
-          </button>
-        </div> */}
       </>
     );
   }
