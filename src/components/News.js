@@ -5,15 +5,15 @@ import InfiniteScroll from "react-infinite-scroll-component";
 
 export default class News extends Component {
   apiKey = process.env.REACT_APP_NEWS_API;
-  
+
   static defaultProps = {
     pageSize: 9,
-    category: 'general'
-  }
+    category: "general",
+  };
 
   toUppercaseTitle = (title) => {
     return title.toUpperCase();
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -22,11 +22,14 @@ export default class News extends Component {
       loading: true,
       page: 1,
     };
-    document.title = `NEWS FATAFAT - ${this.toUppercaseTitle(this.props.category)}`
+    document.title = `NEWS FATAFAT - ${this.toUppercaseTitle(
+      this.props.category
+    )}`;
   }
 
   async updateRendering() {
     let newsAPI = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+    console.log(newsAPI);
     this.props.onProgressState(10);
     let data = await fetch(newsAPI);
     this.props.onProgressState(30);
@@ -59,7 +62,9 @@ export default class News extends Component {
     return (
       <>
         <div className="container my-3">
-          <h1 className="text-center">NEWS FATAFAR - {this.toUppercaseTitle(this.props.category)}</h1>
+          <h1 className="text-center">
+            NEWS FATAFAR - {this.toUppercaseTitle(this.props.category)}
+          </h1>
           {this.state.loading && <Loader />}
           <InfiniteScroll
             dataLength={this.state.articles.length}
