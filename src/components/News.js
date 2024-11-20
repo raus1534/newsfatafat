@@ -95,7 +95,8 @@ export default class News extends Component {
   }
 
   render() {
-    const hasMore = this.state.articles.length < this.state.totalResults;
+    const hasMore =
+      (this.state?.articles?.length || 0) < this.state.totalResults;
 
     return (
       <div className="min-h-screen transition-colors duration-300 bg-gray-50 dark:bg-gray-800">
@@ -106,7 +107,7 @@ export default class News extends Component {
             </div>
           ) : (
             <InfiniteScroll
-              dataLength={this.state.articles.length}
+              dataLength={this.state?.articles?.length || 0}
               next={this.fetchMoreData}
               hasMore={hasMore}
               loader={
@@ -116,29 +117,30 @@ export default class News extends Component {
               }
             >
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 place-items-center">
-                {this.state.articles.map((element) => {
-                  if (element.title === "[Removed]") return null;
-                  return (
-                    <div
-                      key={`${element.url}-${element.publishedAt}`}
-                      className="flex justify-center w-full"
-                    >
-                      <NewsCard
-                        title={element.title}
-                        description={element.content}
-                        urlToImage={element?.urlToImage || ""}
-                        url={element.url}
-                        source={element.source.name}
-                        publishedAt={element.publishedAt}
-                      />
-                    </div>
-                  );
-                })}
+                {this.state?.articles &&
+                  this.state?.articles?.map((element) => {
+                    if (element.title === "[Removed]") return null;
+                    return (
+                      <div
+                        key={`${element.url}-${element.publishedAt}`}
+                        className="flex justify-center w-full"
+                      >
+                        <NewsCard
+                          title={element.title}
+                          description={element.content}
+                          urlToImage={element?.urlToImage || ""}
+                          url={element.url}
+                          source={element.source.name}
+                          publishedAt={element.publishedAt}
+                        />
+                      </div>
+                    );
+                  })}
               </div>
             </InfiniteScroll>
           )}
 
-          {!hasMore && this.state.articles.length > 0 && (
+          {!hasMore && (this.state?.articles.length || 0) > 0 && (
             <div className="py-4 text-center">
               <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
                 You're All Caught Up! ✨
