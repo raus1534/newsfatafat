@@ -2,20 +2,21 @@ import React, { Component } from "react";
 import Loader from "./Loader";
 import InfiniteScroll from "react-infinite-scroll-component";
 import NewsCard from "./NewsCard";
+import { NewsProps, NewsState } from "../types";
+import { getNews } from "src/api/news";
+import { RotateCw } from "lucide-react";
 
-export default class News extends Component {
-  apiKey = process.env.REACT_APP_NEWS_API;
-
-  static defaultProps = {
+export default class News extends Component<NewsProps, NewsState> {
+  static defaultProps: Partial<NewsProps> = {
     pageSize: 8,
     category: "general",
   };
 
-  toUppercaseTitle = (title) => {
+  private toUppercaseTitle = (title: string): string => {
     return title.toUpperCase();
   };
 
-  constructor(props) {
+  constructor(props: NewsProps) {
     super(props);
     this.state = {
       articles: [],
@@ -23,24 +24,23 @@ export default class News extends Component {
       page: 1,
       totalResults: 0,
     };
-    document.title = `NEWS FATAFAT - ${this.toUppercaseTitle(
-      this.props.category
-    )}`;
   }
 
-  async updateRendering() {
-    const newsAPI = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
-
+  private async updateRendering(): Promise<void> {
     try {
       this.props.onProgressState(10);
-      const data = await fetch(newsAPI);
-      this.props.onProgressState(30);
-      const parsedData = await data.json();
-      this.props.onProgressState(80);
+      const parsedData = await getNews({
+        country: this.props.country,
+        category: this.props.category,
+        page: this.state.page,
+        pageSize: this.props.pageSize,
+      });
+
+      this.props.onProgressState(50);
 
       this.setState({
         articles: parsedData.articles,
-        totalResults: parsedData.totalResults,
+        totalResults: parsedData.totalResults || parsedData.totalArticles,
         loading: false,
       });
 
@@ -52,51 +52,50 @@ export default class News extends Component {
     }
   }
 
-  async componentDidMount() {
+  async componentDidMount(): Promise<void> {
     await this.updateRendering();
   }
 
-  fetchMoreData = async () => {
+  private fetchMoreData = async (): Promise<void> => {
     const nextPage = this.state.page + 1;
-    const newsAPI = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.apiKey}&page=${nextPage}&pageSize=${this.props.pageSize}`;
 
     try {
-      const data = await fetch(newsAPI);
-      const parsedData = await data.json();
-
+      const parsedData = await getNews({
+        country: this.props.country,
+        category: this.props.category,
+        page: nextPage,
+        pageSize: this.props.pageSize,
+      });
       this.setState({
         page: nextPage,
         articles: [...this.state.articles, ...parsedData.articles],
-        totalResults: parsedData.totalResults,
+        totalResults: parsedData.totalResults || parsedData.totalArticles,
       });
     } catch (error) {
       console.error("Error fetching more news:", error);
     }
   };
-  async componentDidUpdate(prevProps) {
-    // Check if relevant props have changed
+
+  async componentDidUpdate(prevProps: NewsProps): Promise<void> {
     if (
       prevProps.category !== this.props.category ||
       prevProps.country !== this.props.country ||
       prevProps.pageSize !== this.props.pageSize
     ) {
-      // Reset state and update rendering
       this.setState({ page: 1, articles: [], loading: true }, async () => {
         await this.updateRendering();
       });
-
-      // Update the document title if the category changes
-      if (prevProps.category !== this.props.category) {
-        document.title = `NEWS FATAFAT - ${this.toUppercaseTitle(
-          this.props.category
-        )}`;
-      }
     }
   }
 
-  render() {
-    const hasMore =
-      (this.state?.articles?.length || 0) < this.state.totalResults;
+  render(): React.ReactNode {
+    const hasMore = this.state?.articles?.length
+      ? this.state?.articles?.length < this.state.totalResults
+      : false;
+
+    // Check if there are no articles or if articles is undefined
+    const noArticlesMessage =
+      !this.state?.articles?.length || this.state?.articles === undefined;
 
     return (
       <div className="min-h-screen transition-colors duration-300 bg-gray-50 dark:bg-gray-800">
@@ -104,6 +103,19 @@ export default class News extends Component {
           {this.state.loading ? (
             <div className="flex items-center justify-center w-full min-h-[50vh]">
               <Loader />
+            </div>
+          ) : noArticlesMessage ? (
+            <div className="flex justify-center w-full min-h-[50vh] items-center flex-col">
+              <p className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+                No articles available at the moment. Please check back later.
+              </p>
+              <button
+                onClick={this.updateRendering} // Triggers the fetch again
+                className="flex items-center justify-center px-4 py-2 mt-4 text-white transition-colors duration-300 bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <RotateCw className="w-6 h-6 mr-2" />
+                <span className="ml-2 text-sm">Reload</span>
+              </button>
             </div>
           ) : (
             <InfiniteScroll
@@ -140,7 +152,7 @@ export default class News extends Component {
             </InfiniteScroll>
           )}
 
-          {!hasMore && (this.state?.articles.length || 0) > 0 && (
+          {!hasMore && (this.state?.articles?.length || 0) > 0 && (
             <div className="py-4 text-center">
               <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
                 You're All Caught Up! ✨

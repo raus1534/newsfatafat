@@ -5,29 +5,31 @@ import LoadingBar from "react-top-loading-bar";
 import "./index.css";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { MemoizedNewsProps } from "./types";
 
-// Memoize the News component to avoid unnecessary re-renders
-const MemoizedNews = React.memo(({ category, country, onProgressState }) => {
-  return (
-    <News
-      country={country}
-      onProgressState={onProgressState}
-      category={category}
-      pageSize="9"
-    />
-  );
-});
+const MemoizedNews: React.FC<MemoizedNewsProps> = React.memo(
+  ({ category, country, onProgressState }) => {
+    return (
+      <News
+        country={country}
+        onProgressState={onProgressState}
+        category={category}
+        pageSize={8}
+      />
+    );
+  }
+);
 
-const App = () => {
-  const [progress, setProgress] = useState(0);
-  const [country, setCountry] = useState("us");
+const App: React.FC = () => {
+  const [progress, setProgress] = useState<number>(0);
+  const [country, setCountry] = useState<string>("us");
 
   // Using useCallback to memoize the function and avoid unnecessary re-renders
-  const progressChange = useCallback((newProgress) => {
+  const progressChange = useCallback((newProgress: number) => {
     setProgress(newProgress);
   }, []);
 
-  const countryChange = useCallback((newCountry) => {
+  const countryChange = useCallback((newCountry: string) => {
     setCountry(newCountry);
   }, []);
 
@@ -37,7 +39,6 @@ const App = () => {
       <LoadingBar color="#f11946" progress={progress} height={4} />
       <Routes>
         <Route
-          exact
           path="/"
           element={
             <MemoizedNews
@@ -48,7 +49,6 @@ const App = () => {
           }
         />
         <Route
-          exact
           path="/business"
           element={
             <MemoizedNews
@@ -59,7 +59,6 @@ const App = () => {
           }
         />
         <Route
-          exact
           path="/entertainment"
           element={
             <MemoizedNews
@@ -70,7 +69,6 @@ const App = () => {
           }
         />
         <Route
-          exact
           path="/health"
           element={
             <MemoizedNews
@@ -81,7 +79,6 @@ const App = () => {
           }
         />
         <Route
-          exact
           path="/science"
           element={
             <MemoizedNews
@@ -92,7 +89,6 @@ const App = () => {
           }
         />
         <Route
-          exact
           path="/sport"
           element={
             <MemoizedNews
@@ -103,7 +99,6 @@ const App = () => {
           }
         />
         <Route
-          exact
           path="/tech"
           element={
             <MemoizedNews

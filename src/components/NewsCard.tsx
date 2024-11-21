@@ -1,18 +1,9 @@
 import { Clock, ExternalLink, Share2 } from "lucide-react";
 import React, { useState } from "react";
+import { CustomToast } from "./CustomToast";
+import { NewsCardProps } from "../types";
 
-const CustomToast = ({ message, onClose }) => {
-  return (
-    <div className="fixed z-50 flex items-center px-4 py-2 mb-4 space-x-2 text-white transition-all duration-500 transform -translate-x-1/2 rounded-lg shadow-lg opacity-100 bottom-5 left-1/2 bg-gradient-to-r from-blue-600 to-blue-700 animate-fade-in-out">
-      <span>{message}</span>
-      <button onClick={onClose} className="ml-3 font-bold text-white">
-        x
-      </button>
-    </div>
-  );
-};
-
-const NewsCard = ({
+const NewsCard: React.FC<NewsCardProps> = ({
   title,
   description,
   urlToImage,
@@ -20,9 +11,9 @@ const NewsCard = ({
   source,
   publishedAt,
 }) => {
-  const [toastVisible, setToastVisible] = useState(false);
+  const [toastVisible, setToastVisible] = useState<boolean>(false);
 
-  const formatDate = (date) => {
+  const formatDate = (date: string | Date): string => {
     return new Date(date).toLocaleDateString("en-US", {
       hour: "numeric",
       minute: "numeric",
@@ -30,7 +21,7 @@ const NewsCard = ({
     });
   };
 
-  const handleShareClick = () => {
+  const handleShareClick = (): void => {
     if (navigator.share) {
       // Attempt to use the Web Share API if supported
       navigator
@@ -85,7 +76,7 @@ const NewsCard = ({
             alt={title}
             className="object-cover w-full h-full transition-all duration-700 transform group-hover:scale-110"
             onError={(e) => {
-              e.target.src = "/api/placeholder/400/320";
+              (e.target as HTMLImageElement).src = "/api/placeholder/400/320";
             }}
           />
           {/* Enhanced gradient overlay */}
