@@ -9,6 +9,7 @@ export const getNews = async (params: ApiParams) => {
       apiKey: process.env.REACT_APP_NEWS_API || "",
       page: params.page,
       pageSize: params.pageSize || 8,
+      q: params.q || "",
     },
   });
 

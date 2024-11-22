@@ -1,4 +1,5 @@
 import { AxiosError } from "axios";
+import { Country } from "src/types";
 
 export const handleAxiosError = (error: unknown) => {
   if (error instanceof AxiosError) {
@@ -9,3 +10,7 @@ export const handleAxiosError = (error: unknown) => {
   }
   return { error: "An unknown error occurred" };
 };
+export const countries: Country[] = [
+  { code: "us", name: "EN", flag: "🇺🇸" },
+  { code: "np", name: "नेपा", flag: "🇳🇵" },
+];

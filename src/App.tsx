@@ -35,7 +35,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <Navbar countryChange={countryChange} />
+      <Navbar countryChange={countryChange} selectedCountry={country} />
       <LoadingBar color="#f11946" progress={progress} height={4} />
       <Routes>
         <Route

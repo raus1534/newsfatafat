@@ -12,10 +12,6 @@ export default class News extends Component<NewsProps, NewsState> {
     category: "general",
   };
 
-  private toUppercaseTitle = (title: string): string => {
-    return title.toUpperCase();
-  };
-
   constructor(props: NewsProps) {
     super(props);
     this.state = {
@@ -26,14 +22,22 @@ export default class News extends Component<NewsProps, NewsState> {
     };
   }
 
+  private getQueryParam = (param: string): string | null => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+  };
+
   private async updateRendering(): Promise<void> {
     try {
       this.props.onProgressState(10);
+
+      const q = this.getQueryParam("q");
       const parsedData = await getNews({
         country: this.props.country,
         category: this.props.category,
         page: this.state.page,
         pageSize: this.props.pageSize,
+        q: q,
       });
 
       this.props.onProgressState(50);
@@ -58,13 +62,14 @@ export default class News extends Component<NewsProps, NewsState> {
 
   private fetchMoreData = async (): Promise<void> => {
     const nextPage = this.state.page + 1;
-
     try {
+      const q = this.getQueryParam("q");
       const parsedData = await getNews({
         country: this.props.country,
         category: this.props.category,
         page: nextPage,
         pageSize: this.props.pageSize,
+        q: q,
       });
       this.setState({
         page: nextPage,
@@ -79,7 +84,7 @@ export default class News extends Component<NewsProps, NewsState> {
   async componentDidUpdate(prevProps: NewsProps): Promise<void> {
     if (
       prevProps.category !== this.props.category ||
-      prevProps.country !== this.props.country ||
+      prevProps.country !== this.props.country || // Trigger on country change
       prevProps.pageSize !== this.props.pageSize
     ) {
       this.setState({ page: 1, articles: [], loading: true }, async () => {
@@ -110,7 +115,7 @@ export default class News extends Component<NewsProps, NewsState> {
                 No articles available at the moment. Please check back later.
               </p>
               <button
-                onClick={this.updateRendering} // Triggers the fetch again
+                onClick={this.updateRendering}
                 className="flex items-center justify-center px-4 py-2 mt-4 text-white transition-colors duration-300 bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <RotateCw className="w-6 h-6 mr-2" />

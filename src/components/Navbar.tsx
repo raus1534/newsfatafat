@@ -6,14 +6,18 @@ import {
   ChevronDown,
   Globe,
   Search,
-  // Bell,
   Sun,
   Moon,
   TrendingUp,
+  Check,
 } from "lucide-react";
-import { Country, NavbarProps, NavItem } from "../types";
+import { NavbarProps, NavItem } from "../types";
+import { countries } from "src/utils/helper";
 
-const Navbar: React.FC<NavbarProps> = ({ countryChange }) => {
+const Navbar: React.FC<NavbarProps> = ({
+  countryChange,
+  selectedCountry = "us",
+}) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isCountryOpen, setIsCountryOpen] = useState<boolean>(false);
   const [scrolled, setScrolled] = useState<boolean>(false);
@@ -31,7 +35,6 @@ const Navbar: React.FC<NavbarProps> = ({ countryChange }) => {
   const [search, setSearch] = useState<string>("");
 
   const dropdownRef = useRef<HTMLDivElement>(null);
-
   const location = useLocation();
 
   useEffect(() => {
@@ -73,6 +76,10 @@ const Navbar: React.FC<NavbarProps> = ({ countryChange }) => {
     setIsDark(!isDark);
   };
 
+  const getCurrentCountry = () => {
+    return countries.find((country) => country.code === selectedCountry);
+  };
+
   const navItems: NavItem[] = [
     { title: "General", path: "/", icon: TrendingUp },
     { title: "Business", path: "/business" },
@@ -81,11 +88,6 @@ const Navbar: React.FC<NavbarProps> = ({ countryChange }) => {
     { title: "Science", path: "/science" },
     { title: "Sports", path: "/sport" },
     { title: "Technology", path: "/tech" },
-  ];
-
-  const countries: Country[] = [
-    { code: "us", name: "EN", flag: "🇺🇸" },
-    { code: "np", name: "नेपा", flag: "🇳🇵" },
   ];
 
   return (
@@ -106,7 +108,12 @@ const Navbar: React.FC<NavbarProps> = ({ countryChange }) => {
         <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center flex-shrink-0">
-              <Link to="/" className="flex items-center space-x-2 group">
+              <div
+                onClick={() => {
+                  window.location.href = "/";
+                }}
+                className="flex items-center space-x-2 cursor-pointer group"
+              >
                 <span
                   className={`flex items-center transition-all duration-300 ${
                     scrolled ? "text-blue-900 dark:text-white" : "text-white"
@@ -123,7 +130,7 @@ const Navbar: React.FC<NavbarProps> = ({ countryChange }) => {
                     </span>
                   </span>
                 </span>
-              </Link>
+              </div>
             </div>
 
             {/* Desktop Navigation */}
@@ -175,17 +182,23 @@ const Navbar: React.FC<NavbarProps> = ({ countryChange }) => {
                   <input
                     type="text"
                     placeholder="Search news..."
-                    className={`absolute left-0 -top-1 transition-all duration-300 border-b border-transparent focus:outline-none focus:border-blue-500 text-black bg-white ${
+                    className={`absolute left-0 -top-1 transition-all duration-300 border-b border-transparent focus:outline-none focus:border-blue-500 text-black dark:text-white dark:bg-gray-800 bg-white ${
                       showSearch
-                        ? "w-40 border-gray-300 z-50 py-0.5 pl-2 rounded"
+                        ? "2xl:w-40 xl:w-36 lg:w-32 md:w-24 w-24 border-gray-300 z-50 py-0.5 pl-2 rounded"
                         : "w-0"
                     }`}
                     value={search}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       setSearch(e.target.value);
                     }}
+                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                      if (e.key === "Enter") {
+                        window.location.href = `${
+                          window.location.pathname
+                        }?q=${encodeURIComponent(search)}`;
+                      }
+                    }}
                   />
-
                   <Search className="w-5 h-5 transition-colors duration-300 cursor-pointer hover:text-blue-500" />
                 </div>
               </div>
@@ -210,20 +223,30 @@ const Navbar: React.FC<NavbarProps> = ({ countryChange }) => {
               {/* Country Selector */}
               <div className="relative" ref={dropdownRef}>
                 <div
-                  className={`flex items-center cursor-pointer sm:space-x-2 space-x-0 ${
+                  className={`flex items-center cursor-pointer sm:space-x-2 space-x-1 ${
                     scrolled
                       ? "text-gray-600 dark:text-gray-300"
                       : "text-gray-300"
-                  }`}
+                  } hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-300 p-2 rounded-lg`}
                   onClick={() => setIsCountryOpen(!isCountryOpen)}
                 >
                   <Globe className="w-5 h-5" />
-                  <ChevronDown className="w-4 h-4" />
+                  <span className="items-center hidden space-x-1 sm:inline-flex">
+                    <span>{getCurrentCountry()?.flag}</span>
+                    <span className="text-sm font-medium">
+                      {getCurrentCountry()?.name}
+                    </span>
+                  </span>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-300 ${
+                      isCountryOpen ? "rotate-180" : ""
+                    }`}
+                  />
                 </div>
 
                 {isCountryOpen && (
-                  <div className="absolute right-0 z-50 w-20 mt-2 bg-white rounded-lg shadow-lg dark:bg-gray-800">
-                    <div className="overflow-y-auto max-h-48">
+                  <div className="absolute right-0 z-50 w-48 py-1 mt-2 bg-white border rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700">
+                    <div className="overflow-y-auto max-h-48 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
                       {countries.map((country) => (
                         <div
                           key={country.code}
@@ -231,11 +254,22 @@ const Navbar: React.FC<NavbarProps> = ({ countryChange }) => {
                             countryChange(country.code);
                             setIsCountryOpen(false);
                           }}
-                          className="p-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white dark:text-gray-800"
+                          className={`px-4 py-2 cursor-pointer flex items-center justify-between
+                            ${
+                              selectedCountry === country.code
+                                ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            }`}
                         >
-                          <span className="text-sm">
-                            {country.flag} {country.name}
+                          <span className="flex items-center space-x-2">
+                            <span>{country.flag}</span>
+                            <span className="text-sm font-medium">
+                              {country.name}
+                            </span>
                           </span>
+                          {selectedCountry === country.code && (
+                            <Check className="w-4 h-4" />
+                          )}
                         </div>
                       ))}
                     </div>
@@ -246,7 +280,11 @@ const Navbar: React.FC<NavbarProps> = ({ countryChange }) => {
               {/* Hamburger Menu for Mobile */}
               <div className="xl:hidden">
                 <button
-                  className="p-2 text-gray-300 hover:text-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`p-2 hover:text-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg transition-colors duration-300 ${
+                    scrolled
+                      ? "text-gray-600 dark:text-gray-300"
+                      : "text-gray-300"
+                  }`}
                   onClick={() => setIsOpen(!isOpen)}
                 >
                   {isOpen ? (
@@ -270,12 +308,12 @@ const Navbar: React.FC<NavbarProps> = ({ countryChange }) => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`px-3 items-center py-2 text-base flex space-x-2 font-medium rounded-md 
-          ${
-            location.pathname === item.path
-              ? "bg-blue-500 text-white"
-              : "text-gray-300 hover:text-gray-900 hover:bg-blue-500"
-          }`}
+                  className={`px-3 items-center py-2 text-base flex space-x-2 font-medium rounded-md transition-all duration-300 
+                    ${
+                      location.pathname === item.path
+                        ? "bg-blue-500 text-white"
+                        : "text-gray-300 hover:text-white hover:bg-blue-500"
+                    }`}
                   onClick={() => setIsOpen(false)}
                 >
                   <span>{item.title}</span>

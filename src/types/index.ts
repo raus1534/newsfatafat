@@ -5,6 +5,7 @@ export interface MemoizedNewsProps {
 }
 export interface NavbarProps {
   countryChange: (country: string) => void;
+  selectedCountry: string;
 }
 export interface Country {
   code: string;
@@ -59,4 +60,5 @@ export interface ApiParams {
   category: string | undefined;
   page: number;
   pageSize: number | undefined;
+  q: string | undefined | null;
 }
