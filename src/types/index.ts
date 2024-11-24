@@ -48,6 +48,7 @@ export interface NewsCardProps {
   url: string;
   source: string;
   publishedAt: string;
+  country: string;
 }
 
 export interface CustomToastProps {

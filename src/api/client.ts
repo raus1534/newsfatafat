@@ -1,16 +1,20 @@
-import axios from "axios";
+import axios, { InternalAxiosRequestConfig } from "axios";
 import { handleAxiosError } from "../utils/helper";
 
-// Axios instance
-const client = axios.create({
-  baseURL: process.env.REACT_APP_BASEURL || "https://newsapi.org/v2",
-});
+export interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
+  baseURLOverride?: string;
+}
 
-// Request interceptor (optional, for modifying requests globally)
+const client = axios.create();
+
 client.interceptors.request.use(
-  (config) => {
-    // Modify request if needed (no token required here)
-    // You can still set default params or headers
+  (config: CustomAxiosRequestConfig) => {
+    if (config.baseURLOverride) {
+      config.baseURL = config.baseURLOverride;
+    } else {
+      config.baseURL =
+        process.env.REACT_APP_BASEURL || "https://newsapi.org/v2";
+    }
     return config;
   },
   (error) => {
@@ -22,7 +26,7 @@ client.interceptors.request.use(
 // Response interceptor for handling errors globally
 client.interceptors.response.use(
   (response) => {
-    // successful
+    // Successful response
     return response;
   },
   (error) => {

@@ -3,7 +3,7 @@ import Loader from "./Loader";
 import InfiniteScroll from "react-infinite-scroll-component";
 import NewsCard from "./NewsCard";
 import { NewsProps, NewsState } from "../types";
-import { getNews } from "src/api/news";
+import { getNepaliNews, getNews } from "src/api/news";
 import { RotateCw } from "lucide-react";
 
 export default class News extends Component<NewsProps, NewsState> {
@@ -30,6 +30,19 @@ export default class News extends Component<NewsProps, NewsState> {
   private async updateRendering(): Promise<void> {
     try {
       this.props.onProgressState(10);
+      if (this.props.country === "np") {
+        const articles = await getNepaliNews();
+        this.props.onProgressState(50);
+
+        this.setState({
+          articles: articles,
+          totalResults: articles.length,
+          loading: false,
+        });
+
+        this.props.onProgressState(100);
+        return;
+      }
 
       const q = this.getQueryParam("q");
       const parsedData = await getNews({
@@ -149,6 +162,7 @@ export default class News extends Component<NewsProps, NewsState> {
                           url={element.url}
                           source={element.source.name}
                           publishedAt={element.publishedAt}
+                          country={this.props.country}
                         />
                       </div>
                     );

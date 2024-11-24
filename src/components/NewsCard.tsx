@@ -10,6 +10,7 @@ const NewsCard: React.FC<NewsCardProps> = ({
   url,
   source,
   publishedAt,
+  country,
 }) => {
   const [toastVisible, setToastVisible] = useState<boolean>(false);
 
@@ -38,7 +39,6 @@ const NewsCard: React.FC<NewsCardProps> = ({
           console.error("Error sharing:", error);
         });
     } else {
-      // Fallback for unsupported platforms: Copy the link to clipboard
       if (navigator.clipboard) {
         navigator.clipboard.writeText(url).then(() => {
           // Show custom toast on successful copy
@@ -53,7 +53,7 @@ const NewsCard: React.FC<NewsCardProps> = ({
 
   return (
     <>
-      <a href={url} target="_blank" className="w-72">
+      <a href={url} target="_blank" rel="noreferrer" className="w-72">
         <div className="relative overflow-hidden transition-all duration-500 bg-white border shadow-md dark:bg-gray-800/90 rounded-2xl hover:shadow-xl border-gray-100/10 dark:border-gray-700/30 backdrop-blur-sm">
           {/* Premium Content Indicator */}
           <div className="absolute z-20 flex space-x-2 top-3 left-3">
@@ -88,7 +88,9 @@ const NewsCard: React.FC<NewsCardProps> = ({
             <div className="absolute flex items-center space-x-2 bottom-3 left-3 text-white/90">
               <Clock className="w-4 h-4" />
               <span className="text-xs font-medium">
-                {formatDate(publishedAt || new Date())}
+                {country === "np"
+                  ? publishedAt
+                  : formatDate(publishedAt || new Date())}
               </span>
             </div>
           </div>
